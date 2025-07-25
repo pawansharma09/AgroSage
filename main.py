@@ -9,6 +9,16 @@ from datetime import datetime, timedelta
 import random
 import time
 
+from components.chat_interface import render_chat_interface
+from components.government_schemes import render_government_schemes
+from components.image_diagnosis import render_image_diagnosis
+from components.market_info import render_market_info
+from components.sidebar import render_sidebar
+from components.weather_dashboard import render_weather_dashboard
+from config import Config
+from utils.knowledge_base import KnowledgeBase
+from utils.llm_handler import LLMHandler
+
 # Page configuration
 st.set_page_config(
     page_title="🌾 AgroSage - AI Farming Assistant",
