@@ -1,33 +1,48 @@
+import requests
 from datetime import datetime, timedelta
-import random
 
 class WeatherService:
-    """Simulated weather service"""
-    
+    """Live weather service using OpenWeatherMap API"""
+
+    BASE_URL = "https://api.openweathermap.org/data/2.5/forecast"
+
     @staticmethod
-    def get_weather_forecast(state):
-        """Get weather forecast for farming decisions"""
-        weather_conditions = ["Sunny", "Partly Cloudy", "Rainy", "Thunderstorm"]
-        forecast = []
-        
-        for i in range(5):
-            date = datetime.now() + timedelta(days=i)
-            forecast.append({
-                "date": date.strftime("%Y-%m-%d"),
-                "condition": random.choice(weather_conditions),
-                "temp_max": random.randint(25, 40),
-                "temp_min": random.randint(15, 25),
-                "humidity": random.randint(40, 90),
-                "rainfall": random.randint(0, 50) if random.choice([True, False]) else 0
-            })
-        
-        return forecast
-    
+    def get_weather_forecast(city_name, api_key):
+        """Fetch 5-day forecast from OpenWeatherMap"""
+        params = {
+            "q": city_name,
+            "appid": api_key,
+            "units": "metric"
+        }
+
+        response = requests.get(WeatherService.BASE_URL, params=params)
+        data = response.json()
+
+        if response.status_code != 200 or "list" not in data:
+            raise ValueError(f"Failed to fetch data: {data.get('message', 'Unknown error')}")
+
+        # Process forecast for next 5 days at 12:00 PM
+        forecast_map = {}
+        for entry in data["list"]:
+            dt_txt = entry["dt_txt"]
+            if "12:00:00" in dt_txt:
+                date = dt_txt.split(" ")[0]
+                forecast_map[date] = {
+                    "date": date,
+                    "condition": entry["weather"][0]["main"],
+                    "temp_max": round(entry["main"]["temp_max"]),
+                    "temp_min": round(entry["main"]["temp_min"]),
+                    "humidity": entry["main"]["humidity"],
+                    "rainfall": entry.get("rain", {}).get("3h", 0)
+                }
+
+        return list(forecast_map.values())[:5]
+
     @staticmethod
     def get_farming_advice(forecast):
-        """Get farming advice based on weather"""
+        """Generate farming advice based on weather"""
         advice = []
-        
+
         for day in forecast:
             if day["rainfall"] > 20:
                 advice.append("Heavy rainfall expected. Avoid spraying pesticides.")
@@ -37,5 +52,5 @@ class WeatherService:
                 advice.append("High humidity. Monitor for fungal diseases.")
             else:
                 advice.append("Good weather for field operations.")
-        
+
         return advice
