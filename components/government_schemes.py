@@ -1,3 +1,5 @@
+import streamlit as st
+from utils.knowledge_base import KnowledgeBase
 
 def render_government_schemes():
     """Render government schemes information"""

@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+import random
+
 class WeatherService:
     """Simulated weather service"""
     

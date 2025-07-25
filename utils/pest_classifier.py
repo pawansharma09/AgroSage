@@ -1,3 +1,5 @@
+import random
+
 class PestClassifier:
     """Simulated pest/disease classification"""
     

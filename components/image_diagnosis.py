@@ -1,3 +1,8 @@
+import time
+import streamlit as st
+from PIL import Image
+from utils.pest_classifier import PestClassifier
+
 def render_image_diagnosis():
     """Render image diagnosis interface"""
     st.header("📸 Pest & Disease Diagnosis")

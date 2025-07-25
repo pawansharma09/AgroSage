@@ -1,3 +1,4 @@
+import streamlit as st
 
 def render_chat_interface(llm_handler, language):
     """Render chat interface"""

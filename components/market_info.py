@@ -1,3 +1,6 @@
+import streamlit as st
+from utils.knowledge_base import KnowledgeBase
+import pandas as pd
 
 def render_market_info():
     """Render market information"""

@@ -1,3 +1,5 @@
+import random
+
 class KnowledgeBase:
     """Simulated RAG system with Indian agricultural knowledge"""
     

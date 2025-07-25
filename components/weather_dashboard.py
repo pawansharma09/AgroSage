@@ -1,3 +1,5 @@
+import streamlit as st
+from utils.weather_service import WeatherService
 
 def render_weather_dashboard(state):
     """Render weather dashboard"""

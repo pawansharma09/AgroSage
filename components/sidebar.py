@@ -1,3 +1,5 @@
+from config import Config
+import streamlit as st
 
 def render_sidebar():
     """Render sidebar with user preferences"""

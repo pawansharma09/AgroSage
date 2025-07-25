@@ -67,4 +67,4 @@ AgroSage is a comprehensive AI-powered agricultural assistant designed specifica
 
 ## Contact
 Built with ❤️ for Indian Farmers
-"""
+By Pawan Sharma
