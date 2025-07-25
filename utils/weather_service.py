@@ -1,4 +1,5 @@
 import requests
+import random
 from datetime import datetime, timedelta
 
 class WeatherService:
@@ -7,10 +8,11 @@ class WeatherService:
     BASE_URL = "https://api.openweathermap.org/data/2.5/forecast"
 
     @staticmethod
-    def get_weather_forecast(city_name, api_key):
-        """Fetch 5-day forecast from OpenWeatherMap"""
+    def get_weather_forecast(state):
+        """Get real 5-day forecast using OpenWeatherMap"""
+        api_key = st.secrets["weather_api_key"]  # Uses existing secrets setup
         params = {
-            "q": city_name,
+            "q": state,
             "appid": api_key,
             "units": "metric"
         }
@@ -19,28 +21,36 @@ class WeatherService:
         data = response.json()
 
         if response.status_code != 200 or "list" not in data:
-            raise ValueError(f"Failed to fetch data: {data.get('message', 'Unknown error')}")
+            raise ValueError(f"Weather API error: {data.get('message', 'Unknown error')}")
 
-        # Process forecast for next 5 days at 12:00 PM
-        forecast_map = {}
+        forecast = []
+        used_dates = set()
+
         for entry in data["list"]:
             dt_txt = entry["dt_txt"]
-            if "12:00:00" in dt_txt:
-                date = dt_txt.split(" ")[0]
-                forecast_map[date] = {
-                    "date": date,
+            date_only = dt_txt.split(" ")[0]
+            time_only = dt_txt.split(" ")[1]
+
+            # Only one reading per day, ideally around midday
+            if date_only not in used_dates and time_only.startswith("12"):
+                forecast.append({
+                    "date": date_only,
                     "condition": entry["weather"][0]["main"],
                     "temp_max": round(entry["main"]["temp_max"]),
                     "temp_min": round(entry["main"]["temp_min"]),
                     "humidity": entry["main"]["humidity"],
                     "rainfall": entry.get("rain", {}).get("3h", 0)
-                }
+                })
+                used_dates.add(date_only)
 
-        return list(forecast_map.values())[:5]
+            if len(forecast) >= 5:
+                break
+
+        return forecast
 
     @staticmethod
     def get_farming_advice(forecast):
-        """Generate farming advice based on weather"""
+        """Get farming advice based on live forecast"""
         advice = []
 
         for day in forecast:
