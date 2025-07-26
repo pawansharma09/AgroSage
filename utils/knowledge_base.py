@@ -48,25 +48,30 @@ class KnowledgeBase:
             {
                 "name": "PM-KISAN",
                 "description": "₹6000 per year direct income support",
-                "eligibility": "Small and marginal farmers"
+                "eligibility": "Small and marginal farmers",
+                "url": "https://pmkisan.gov.in/"
             },
             {
                 "name": "Pradhan Mantri Fasal Bima Yojana",
                 "description": "Crop insurance against natural calamities",
-                "eligibility": "All farmers"
+                "eligibility": "All farmers",
+                "url": "https://pmfby.gov.in/"
             },
             {
                 "name": "Kisan Credit Card",
                 "description": "Easy access to credit for farming needs",
-                "eligibility": "All farmers with land documents"
+                "eligibility": "All farmers with land documents",
+                "url": "https://www.pmkisan.gov.in/Documents/KCC.pdf"
             },
             {
                 "name": "Soil Health Card",
                 "description": "Free soil testing and nutrient recommendations",
-                "eligibility": "All farmers"
+                "eligibility": "All farmers",
+                "url": "https://soilhealth.dac.gov.in/"
             }
         ]
         return schemes
+
     
     @staticmethod
     def get_market_prices():
