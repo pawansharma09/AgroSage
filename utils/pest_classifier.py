@@ -1,34 +1,44 @@
-import random
+import requests
+import base64
+import streamlit as st
 
 class PestClassifier:
-    """Simulated pest/disease classification"""
-    
-    @staticmethod
-    def classify_image(image):
-        """Simulate pest/disease classification"""
-        # In real implementation, this would use a trained CNN model
-        pests = [
-            {
-                "name": "Brown Planthopper",
-                "confidence": 0.85,
-                "crop": "Rice",
-                "treatment": "Use Imidacloprid 17.8% SL @ 100ml/acre",
-                "organic_treatment": "Neem oil spray, encourage natural predators"
-            },
-            {
-                "name": "Aphids",
-                "confidence": 0.78,
-                "crop": "Multiple crops",
-                "treatment": "Thiamethoxam 25% WG @ 100g/acre",
-                "organic_treatment": "Soap water spray, ladybird beetles"
-            },
-            {
-                "name": "Leaf Blight",
-                "confidence": 0.72,
-                "crop": "Wheat",
-                "treatment": "Propiconazole 25% EC @ 250ml/acre",
-                "organic_treatment": "Copper fungicide, proper spacing"
+    HF_API_URL = "https://api-inference.huggingface.co/models/Amrrs/plant_disease"
+    HF_TOKEN = st.secrets["HF_TOKEN"]
+
+    @classmethod
+    def classify_image(cls, image):
+        # Convert PIL image to base64
+        buffered = image.convert("RGB")
+        buffered.save("temp.jpg", format="JPEG")
+        with open("temp.jpg", "rb") as img_file:
+            img_bytes = img_file.read()
+
+        headers = {
+            "Authorization": f"Bearer {cls.HF_TOKEN}",
+            "Content-Type": "application/octet-stream"
+        }
+
+        response = requests.post(cls.HF_API_URL, headers=headers, data=img_bytes)
+
+        if response.status_code != 200:
+            return {
+                "name": "Unknown Pest",
+                "confidence": 0.0,
+                "crop": "N/A",
+                "treatment": "N/A",
+                "organic_treatment": "N/A"
             }
-        ]
-        
-        return random.choice(pests)
+
+        predictions = response.json()
+        top_result = predictions[0] if predictions else {"label": "Unknown", "score": 0.0}
+
+        # For now we use hardcoded values for crop and treatment
+        # In a production version, you can map results['label'] to actual pest DB
+        return {
+            "name": top_result['label'],
+            "confidence": top_result['score'],
+            "crop": "Tomato" if "Tomato" in top_result['label'] else "Unknown",
+            "treatment": "Use Imidacloprid 17.8 SL" if "blight" in top_result['label'].lower() else "Consult agronomist",
+            "organic_treatment": "Neem oil spray"
+        }
